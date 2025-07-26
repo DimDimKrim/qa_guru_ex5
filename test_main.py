@@ -2,6 +2,8 @@ from selene import browser, be, have
 import os
 image_path = os.path.abspath("textfile.txt")
 
+
+
 def test_fill_form():
     #Заполнение графы Имя
     browser.element('[id="firstName"]').should(be.visible).type("Иван")
@@ -35,6 +37,21 @@ def test_fill_form():
     #browser.element('[id="submit"]').should(be.visible).click()
     #Проверка отправки формы
     browser.element('[id="example-modal-sizes-title-lg"]').should(be.visible).should(have.text('Thanks for submitting the form'))
+
+def test_successfully_filling():
+    test_fill_form()
+    table_element = browser.all('table.table-dark tbody tr')
+    table_element.element_by(have.text('Student Name')).all('td').second.should(have.text('Иван Иванов'))
+    table_element.element_by(have.text('Student Email')).all('td').second.should(have.text('ivanov22@gmail.com'))
+    table_element.element_by(have.text('Gender')).all('td').second.should(have.text('Male'))
+    table_element.element_by(have.text('Mobile')).all('td').second.should(have.text('8909888767'))
+    table_element.element_by(have.text('Date of Birth')).all('td').second.should(have.text('21 July,2025'))
+    table_element.element_by(have.text('Subjects')).all('td').second.should(have.text('Maths'))
+    table_element.element_by(have.text('Hobbies')).all('td').second.should(have.text('Sports'))
+    table_element.element_by(have.text('Picture')).all('td').second.should(have.text('textfile.txt'))
+    table_element.element_by(have.text('Address')).all('td').second.should(have.text('ул.Пушкина д.Колотушкина кв.3'))
+    table_element.element_by(have.text('State and City')).all('td').second.should(have.text('NCR Delhi'))
+
 
 
 
