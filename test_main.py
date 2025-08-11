@@ -1,7 +1,8 @@
+import os
+import sys
+import pytest
 from selene import browser, be, have
 from pages.registration_page import RegistrationPage
-#import os
-#image_path = os.path.abspath("textfile.txt")
 
 
 

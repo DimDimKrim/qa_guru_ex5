@@ -6,7 +6,7 @@ class RegistrationPage:
     # функция открывает страницу
     def open(self):
         browser.open('https://demoqa.com/automation-practice-form')
-        browser.execute_script('window.scrollBy(0, 500)')
+        browser.driver.execute_script('window.scrollBy(0, 500)')
         return self
 
     # функция заполняет имя
