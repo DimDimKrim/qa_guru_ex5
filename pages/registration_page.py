@@ -1,108 +1,80 @@
 
 from selene import browser, have, be, by
 import resource
+from users import User
+
 
 class RegistrationPage:
-    # функция открывает страницу
+    def __init__(self):
+        self.first_name = browser.element('[id="firstName"]')
+        self.last_name = browser.element('[id="lastName"]')
+        self.user_email = browser.element('[id="userEmail"]')
+        self.user_gender = browser.element('#genterWrapper')
+        self.user_phone_nuber = browser.element('[id="userNumber"]')
+        self.date_of_birth = browser.element('[id = "dateOfBirthInput"]')
+        self.month_of_birth = browser.all('.react-datepicker__month-select option')
+        self.year_of_birth = browser.all('.react-datepicker__year-select option')
+        self.day_of_birth = browser.all('.react-datepicker__day:not(.react-datepicker__day--outside-month)')
+        self.subject_enter = browser.element('[id="subjectsInput"]')
+        self.subject_type = browser.element('#subjectsInput')
+        self.subject_click = browser.all('.subjects-auto-complete__menu div')
+        self.user_hobby = browser.element('#hobbiesWrapper')
+        self.user_picture = browser.element('[id="uploadPicture"]')
+        self.user_address = browser.element('[id="currentAddress"]')
+        self.user_state = browser.element('#state input')
+        self.user_city = browser.element('#city input')
+        self.submit_button = browser.element('[id="submit"]')
+        self.result_table = browser.all('tbody tr td:nth-child(2)')
+
+
     def open(self):
         browser.open('https://demoqa.com/automation-practice-form')
-        browser.driver.execute_script('window.scrollBy(0, 500)')
+        browser.execute_script('window.scrollBy(0, 500)')
         return self
 
-    # функция заполняет имя
-    def fill_first_name(self, value):
-        browser.element('[id="firstName"]').should(be.visible).type(value)
+    def fill_birthday(self, month, year, day):
+        self.date_of_birth.click()
+        self.month_of_birth.element_by(have.exact_text(month)).click()
+        self.year_of_birth.element_by(have.exact_text(year)).click()
+        self.day_of_birth.element_by(have.exact_text(str(int(day)))).click()
         return self
 
-    # Заполнение графы Фамилия
-    def fill_second_name(self, value):
-        browser.element('[id="lastName"]').should(be.visible).type(value)
+    def set_subject_by_click(self, type_letter, value):
+        self.subject_type.type(type_letter)
+        self.subject_click.element_by(have.exact_text(value)).click()
         return self
 
-    # Заполнение графы почты
-    def fill_email(self, value):
-        browser.element('[id="userEmail"]').should(be.visible).type(value)
-        return self
-
-    # Выбор радиокнопки пола
-    def gender_button(self, value):
-        browser.element('#genterWrapper').element(by.text(value)).click()
-        return self
-
-    # Заполнение графы телефон
-    def phone_number(self, value):
-        browser.element('[id="userNumber"]').should(be.visible).type(value)
-        return self
-
-    # Выбор даты рождения
-    def day_of_birth(self, month, year, day):
-        browser.element('[id = "dateOfBirthInput"]').click()
-        browser.all('.react-datepicker__month-select option').element_by(have.exact_text(month)).click()
-        browser.all('.react-datepicker__year-select option').element_by(have.exact_text(year)).click()
-        browser.all(f'.react-datepicker__day:not(.react-datepicker__day--outside-month)').element_by(
-            have.exact_text(str(int(day)))).click()
-        return self
-
-    #Выбор Subjects
-    def subject_fill(self, value):
-        browser.element('#subjectsInput').should(be.visible).type(value).press_enter()
-        return self
-
-    # Выбор хобби
-    def hobby(self, value):
-        browser.element('#hobbiesWrapper').element(by.text(value)).click()
-        return self
-
-    # Загрузка файла
-    def download_file(self, value):
-        browser.element('[id = "uploadPicture"]').should(be.visible).send_keys(resource.image_path(value))
-        return self
-
-    # Заполнение адреса
-    def fill_adress(self, value):
-        browser.element('[id="currentAddress"]').should(be.visible).type(value)
-        return self
-
-    # Выбор локации
     def choose_location(self, state, city):
-        browser.element('#state input').type(state).press_enter()
-        browser.element('#city input').type(city).press_enter()
+        self.user_state.type(state).press_enter()
+        self.user_city.type(city).press_enter()
         return self
 
-    # Выбор города
-    def choose_city(self, city):
-        browser.element('[id="city"]').should(be.visible).click()
-        browser.element('[id="react-select-4-input"]').type(city).press_enter()
+    def should_have_registered(self,user: User):
+        self.result_table.should(have.exact_texts(
+            user.full_name,
+            user.email,
+            user.gender,
+            user.phone_number,
+            user.date_of_birth,
+            user.subjects,
+            user.hobby,
+            user.file_name,
+            user.address,
+            user.state_city
+        ))
         return self
 
-    # Отправка формы
-    def submit_form(self):
-        browser.element('[id="submit"]').click()
-        return self
-
-    # Проверка формы
-    def should_have_registered_user_with(self,
-                                         full_name,
-                                         email,
-                                         gender,
-                                         phone_number,
-                                         birthday,
-                                         subjects,
-                                         hobby,
-                                         file_name,
-                                         address,
-                                         state_city):
-        (browser.all('tbody tr td:nth-child(2)')
-        .should(have.exact_texts(
-            full_name,
-            email,
-            gender,
-            phone_number,
-            birthday,
-            subjects,
-            hobby,
-            file_name,
-            address,
-            state_city
-        )))
-        return self
+    def register(self, user: User):
+        self.first_name.type(user.first_name)
+        self.last_name.type(user.last_name)
+        self.user_email.type(user.email)
+        self.user_gender.element(by.text(user.gender)).click()
+        self.user_phone_nuber.type(user.phone_number)
+        self.fill_birthday(*user.birthday)
+        self.subject_enter.type(user.first_subject).press_enter()
+        self.set_subject_by_click(*user.second_subject)
+        self.user_hobby.element(by.text(user.hobby)).click()
+        self.user_picture.send_keys(resource.image_path(user.file_name))
+        self.user_address.set_value(user.address)
+        self.choose_location(*user.user_location)
+        self.submit_button.click()
