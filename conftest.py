@@ -11,6 +11,7 @@ from utils import attach
 def load_env():
     load_dotenv()
 
+
 @pytest.fixture(scope='function', autouse=True)
 def setup_browser():
     options = Options()
@@ -24,7 +25,7 @@ def setup_browser():
     }
     options.capabilities.update(caps)
 
-    selenoid_url = os.getenv("SELENOID_URL")
+    selenoid_url =f"https://user1:123@selenoid.autotests.cloud/wd/hub" #os.getenv("SELENOID_URL")
     if not selenoid_url:
         raise RuntimeError("SELENOID_URL env variable is not set")
 
