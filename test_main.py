@@ -5,7 +5,9 @@ image_path = os.path.abspath("textfile.txt")
 import allure
 
 
-def test_fill_form():
+def test_fill_form(setup_browser):
+    browser = setup_browser
+    browser.open('https://demoqa.com/automation-practice-form')
     #Заполнение графы Имя
     attach.add_screenshot(browser)
     with allure.step("Заполняем имя"):
@@ -68,7 +70,6 @@ def test_successfully_filling():
         table_element.element_by(have.text('Picture')).all('td').second.should(have.text('textfile.txt'))
         table_element.element_by(have.text('Address')).all('td').second.should(have.text('ул.Пушкина д.Колотушкина кв.3'))
         table_element.element_by(have.text('State and City')).all('td').second.should(have.text('NCR Delhi'))
-
 
 
 
