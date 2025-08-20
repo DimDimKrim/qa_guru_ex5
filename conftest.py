@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 from selenium.webdriver.chrome.options import Options
 from utils import attach
+from selene.support.shared import browser
 
 @pytest.fixture(scope="session", autouse=True)
 def load_env():
@@ -17,7 +18,7 @@ def setup_browser():
     options = Options()
     caps = {
         "browserName": "chrome",
-        "browserVersion": "100.0",
+        #"browserVersion": "100.0",
         "selenoid:options": {
             "enableVNC": True,
             "enableVideo": True
@@ -25,16 +26,12 @@ def setup_browser():
     }
     options.capabilities.update(caps)
 
-    selenoid_url =f"https://user1:123@selenoid.autotests.cloud/wd/hub" #os.getenv("SELENOID_URL")
-    if not selenoid_url:
-        raise RuntimeError("SELENOID_URL env variable is not set")
-
+    options.capabilities.update(caps)
     driver = webdriver.Remote(
-        command_executor=selenoid_url,
-        options=options
-    )
+        command_executor=os.getenv("SELENOID_URL"),
+        options=options)
 
-    browser = Browser(Config(driver))  # Создаем объект Selene с WebDriver
+    browser.config.driver = driver  # Создаем объект Selene с WebDriver
 
     yield browser  # Возвращаем объект browser для тестов
 
@@ -44,7 +41,7 @@ def setup_browser():
     attach.add_html(browser)
     attach.add_video(browser)
 
-    browser.quit()
+    driver.quit()
 
 
 

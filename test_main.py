@@ -3,7 +3,7 @@ import os
 from utils import attach
 image_path = os.path.abspath("textfile.txt")
 import allure
-
+from selene.support.shared import browser
 
 def test_fill_form(setup_browser):
     browser = setup_browser
@@ -42,8 +42,9 @@ def test_fill_form(setup_browser):
         browser.element('[id="currentAddress"]').should(be.visible).type("ул.Пушкина д.Колотушкина кв.3")
     #Выбор штата
     with allure.step("Выбор штата"):
-        browser.element('[id="state"]').should(be.visible).click()
-        browser.element('#react-select-3-input').type('NCR').press_enter()
+        browser.element('#state input').type('NCR').press_enter()
+        #browser.element('[id="state"]').should(be.visible).click()
+        #browser.element('#react-select-3-input').type('NCR').press_enter()
     #Выбор города
     with allure.step("Выбор города"):
         browser.element('[id="city"]').should(be.visible).click()
@@ -56,15 +57,16 @@ def test_fill_form(setup_browser):
     with allure.step("Проверка отправки формы"):
         browser.element('[id="example-modal-sizes-title-lg"]').should(be.visible).should(have.text('Thanks for submitting the form'))
 
-def test_successfully_filling():
+def test_successfully_filling(setup_browser):
     with allure.step("Проверка формы"):
-        test_fill_form()
+        test_fill_form(setup_browser)
+        attach.add_screenshot(browser)
         table_element = browser.all('table.table-dark tbody tr')
         table_element.element_by(have.text('Student Name')).all('td').second.should(have.text('Иван Иванов'))
         table_element.element_by(have.text('Student Email')).all('td').second.should(have.text('ivanov22@gmail.com'))
         table_element.element_by(have.text('Gender')).all('td').second.should(have.text('Male'))
         table_element.element_by(have.text('Mobile')).all('td').second.should(have.text('8909888767'))
-        table_element.element_by(have.text('Date of Birth')).all('td').second.should(have.text('21 July,2025'))
+        table_element.element_by(have.text('Date of Birth')).all('td').second.should(have.text('21 August,2025'))
         table_element.element_by(have.text('Subjects')).all('td').second.should(have.text('Maths'))
         table_element.element_by(have.text('Hobbies')).all('td').second.should(have.text('Sports'))
         table_element.element_by(have.text('Picture')).all('td').second.should(have.text('textfile.txt'))

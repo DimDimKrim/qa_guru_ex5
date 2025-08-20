@@ -9,8 +9,18 @@ def add_screenshot(browser):
 
 # логи
 def add_logs(browser):
-    log = "".join(f'{text}\n' for text in browser.driver.get_log(log_type='browser'))
-    allure.attach(log, 'browser_logs', AttachmentType.TEXT, '.log')
+    try:
+        # Пробуем получить логи браузера
+        logs = browser.driver.get_log('browser')
+        log_text = "".join(f"{entry['message']}\n" for entry in logs)
+    except Exception:
+        # Если не получилось — возвращаем заглушку
+        log_text = "Browser logs are not available."
+
+    # Прикрепляем логи к Allure
+    import allure
+    from allure_commons.types import AttachmentType
+    allure.attach(log_text, name='browser_logs', attachment_type=AttachmentType.TEXT, extension='.log')
 
 # html-код страницы
 def add_html(browser):
