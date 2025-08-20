@@ -28,7 +28,7 @@ def setup_browser():
 
     options.capabilities.update(caps)
     driver = webdriver.Remote(
-        command_executor=os.getenv("SELENOID_URL"),
+        command_executor="https://user1:1234@selenoid.autotests.cloud/wd/hub",   #os.getenv("SELENOID_URL")
         options=options)
 
     browser.config.driver = driver  # Создаем объект Selene с WebDriver
